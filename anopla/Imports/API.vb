@@ -3,10 +3,12 @@
 Public Class API
 	Public Declare Function FindWindow Lib "user32" (ByVal lpClassName As String, ByVal lpWindowName As String) As IntPtr
 	Public Declare Function SetForegroundWindow Lib "user32" (ByVal hWnd As IntPtr) As Boolean
-	Public Declare Function SetWindowsHookExA Lib "user32" (ByVal idHook As Int32, ByVal lpfn As KeyMouseHookDelegate, ByVal hmod As Int32, ByVal dwThreadId As Int32) As Int32
-	Public Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Int32) As Int32
-	Public Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Int32, ByVal nCode As Int32, ByVal wParam As Int32, ByVal lParam As KBDLLHOOKSTRUCT) As Int32
-	Public Declare Function keybd_event Lib "user32" (ByVal vKey As Int32, ByVal bScan As Byte, ByVal dwFlags As Int32, ByVal dwExtraInfo As Int32) As Boolean
+    Public Declare Function SetWindowsHookMouse Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Int32, ByVal lpfn As MouseHookDelegate, ByVal hmod As Int32, ByVal dwThreadId As Int32) As Int32
+    Public Declare Function SetWindowsHookKey Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Int32, ByVal lpfn As KeyHookDelegate, ByVal hmod As Int32, ByVal dwThreadId As Int32) As Int32
+    Public Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Int32) As Int32
+    Public Declare Function CallNextHookMouse Lib "user32" Alias "CallNextHookEx" (ByVal hHook As Int32, ByVal nCode As Int32, ByVal wParam As Int32, ByVal lParam As MSLLHOOKSTRUCT) As Int32
+    Public Declare Function CallNextHookKey Lib "user32" Alias "CallNextHookEx" (ByVal hHook As Int32, ByVal nCode As Int32, ByVal wParam As Int32, ByVal lParam As KBDLLHOOKSTRUCT) As Int32
+    Public Declare Function keybd_event Lib "user32" (ByVal vKey As Int32, ByVal bScan As Byte, ByVal dwFlags As Int32, ByVal dwExtraInfo As Int32) As Boolean
 	Public Declare Function GetMessageExtraInfo Lib "user32" () As Int32
 	Public Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Boolean
 	Public Declare Function WindowFromPoint Lib "user32" (ByVal xyPoint As POINTAPI) As Int32

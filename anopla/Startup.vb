@@ -15,10 +15,10 @@ Public Module Startup
 	End Sub
 
 	Public KeyboardHandle As Integer = 0
-	<MarshalAs(UnmanagedType.FunctionPtr)> Private KeyboardDelegate As KeyMouseHookDelegate
+    <MarshalAs(UnmanagedType.FunctionPtr)> Private KeyboardDelegate As KeyHookDelegate
 
 	Public MouseHandle As Integer = 0
-	<MarshalAs(UnmanagedType.FunctionPtr)> Private MouseDelegate As KeyMouseHookDelegate
+    <MarshalAs(UnmanagedType.FunctionPtr)> Private MouseDelegate As MouseHookDelegate
 
 	Public Function KeyboardCallback(ByVal Code As Integer, ByVal wParam As Integer, ByRef Hookstruct As KBDLLHOOKSTRUCT) As Integer
 		If (Code = HC_ACTION) Then
@@ -35,23 +35,23 @@ Public Module Startup
 			End If
 		End If
 
-		Return CallNextHookEx(KeyboardHandle, Code, wParam, Hookstruct)
+        Return CallNextHookKey(KeyboardHandle, Code, wParam, Hookstruct)
 	End Function
 
-	Public Function MouseCallback(ByVal Code As Integer, ByVal wParam As Integer, ByRef Hookstruct As MOUSEHOOKSTRUCT) As Integer
-		If (Code = HC_ACTION) Then
-			
-		End If
+    Public Function MouseCallback(ByVal Code As Integer, ByVal wParam As Integer, ByRef Hookstruct As MSLLHOOKSTRUCT) As Integer
+        If (Code = HC_ACTION) Then
 
-		Return CallNextHookEx(KeyboardHandle, Code, wParam, Hookstruct)
-	End Function
+        End If
+
+        Return CallNextHookMouse(KeyboardHandle, Code, wParam, Hookstruct)
+    End Function
 
 	Public Sub HookKeyboard()
-		KeyboardDelegate = New KeyMouseHookDelegate(AddressOf KeyboardCallback)
-		KeyboardHandle = SetWindowsHookExA(WH_KEYBOARD_LL, KeyboardDelegate, Marshal.GetHINSTANCE([Assembly].GetExecutingAssembly.GetModules()(0)).ToInt32, 0)
+        KeyboardDelegate = New KeyHookDelegate(AddressOf KeyboardCallback)
+        KeyboardHandle = SetWindowsHookKey(WH_KEYBOARD_LL, KeyboardDelegate, Marshal.GetHINSTANCE([Assembly].GetExecutingAssembly.GetModules()(0)).ToInt32, 0)
 
-		MouseDelegate = New KeyMouseHookDelegate(AddressOf MouseCallback)
-		MouseHandle = SetWindowsHookExA(WH_KEYBOARD_LL, MouseHandle, Marshal.GetHINSTANCE([Assembly].GetExecutingAssembly.GetModules()(0)).ToInt32, 0)
+        MouseDelegate = New MouseHookDelegate(AddressOf MouseCallback)
+        MouseHandle = SetWindowsHookMouse(WH_KEYBOARD_LL, MouseDelegate, Marshal.GetHINSTANCE([Assembly].GetExecutingAssembly.GetModules()(0)).ToInt32, 0)
 	End Sub
 
 	Public Sub UnhookKeyboard()

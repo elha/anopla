@@ -6,6 +6,7 @@ Imports AForge.Video
 Public Class ScreenVideo
     Implements AForge.Video.IVideoSource
 
+
     Private _threadCapture As New System.Threading.Thread(AddressOf ScreenCapture)
 
     Private Sub ScreenCapture()
@@ -107,10 +108,6 @@ Public Class ScreenVideo
         End Get
     End Property
 
-    Public Event NewFrame(ByVal sender As Object, ByVal eventArgs As AForge.Video.NewFrameEventArgs) Implements AForge.Video.IVideoSource.NewFrame
-
-    Public Event PlayingFinished(ByVal sender As Object, ByVal reason As AForge.Video.ReasonToFinishPlaying) Implements AForge.Video.IVideoSource.PlayingFinished
-
     Private _framesReceived As Integer = 0
     Public ReadOnly Property FramesReceived As Integer Implements AForge.Video.IVideoSource.FramesReceived
         Get
@@ -121,4 +118,8 @@ Public Class ScreenVideo
     Public Sub Click(ByVal p As Point)
         Screenshot.MouseClickWindow(CapturedWindow, p.X, p.Y)
     End Sub
+
+    Public Event NewFrame(ByVal sender As Object, ByVal eventArgs As AForge.Video.NewFrameEventArgs) Implements AForge.Video.IVideoSource.NewFrame
+
+    Public Event PlayingFinished(ByVal sender As Object, ByVal reason As AForge.Video.ReasonToFinishPlaying) Implements AForge.Video.IVideoSource.PlayingFinished
 End Class

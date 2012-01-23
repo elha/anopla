@@ -22,40 +22,28 @@ Partial Class Main
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-		Me.Button1 = New System.Windows.Forms.Button()
-		Me.Button2 = New System.Windows.Forms.Button()
-		Me.SuspendLayout()
-		'
-		'Button1
-		'
-		Me.Button1.Location = New System.Drawing.Point(99, 69)
-		Me.Button1.Name = "Button1"
-		Me.Button1.Size = New System.Drawing.Size(98, 53)
-		Me.Button1.TabIndex = 0
-		Me.Button1.Text = "Button1"
-		Me.Button1.UseVisualStyleBackColor = True
-		'
-		'Button2
-		'
-		Me.Button2.Location = New System.Drawing.Point(99, 144)
-		Me.Button2.Name = "Button2"
-		Me.Button2.Size = New System.Drawing.Size(98, 59)
-		Me.Button2.TabIndex = 1
-		Me.Button2.Text = "Button2"
-		Me.Button2.UseVisualStyleBackColor = True
-		'
-		'Main
-		'
-		Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-		Me.ClientSize = New System.Drawing.Size(284, 262)
-		Me.Controls.Add(Me.Button2)
-		Me.Controls.Add(Me.Button1)
-		Me.Name = "Main"
-		Me.Text = "Main"
-		Me.ResumeLayout(False)
+        Me.VideoSourcePlayer1 = New AForge.Controls.VideoSourcePlayer()
+        Me.SuspendLayout()
+        '
+        'VideoSourcePlayer1
+        '
+        Me.VideoSourcePlayer1.Location = New System.Drawing.Point(12, 12)
+        Me.VideoSourcePlayer1.Name = "VideoSourcePlayer1"
+        Me.VideoSourcePlayer1.Size = New System.Drawing.Size(260, 238)
+        Me.VideoSourcePlayer1.TabIndex = 0
+        Me.VideoSourcePlayer1.Text = "VideoSourcePlayer1"
+        Me.VideoSourcePlayer1.VideoSource = Nothing
+        '
+        'Main
+        '
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.ClientSize = New System.Drawing.Size(284, 262)
+        Me.Controls.Add(Me.VideoSourcePlayer1)
+        Me.Name = "Main"
+        Me.Text = "Main"
+        Me.ResumeLayout(False)
 
-	End Sub
-	Friend WithEvents Button1 As System.Windows.Forms.Button
-	Friend WithEvents Button2 As System.Windows.Forms.Button
+    End Sub
+    Friend WithEvents VideoSourcePlayer1 As AForge.Controls.VideoSourcePlayer
 End Class
