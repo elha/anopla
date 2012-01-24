@@ -22,28 +22,29 @@ Partial Class Main
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.VideoSourcePlayer1 = New AForge.Controls.VideoSourcePlayer()
-        Me.SuspendLayout()
-        '
-        'VideoSourcePlayer1
-        '
-        Me.VideoSourcePlayer1.Location = New System.Drawing.Point(12, 12)
-        Me.VideoSourcePlayer1.Name = "VideoSourcePlayer1"
-        Me.VideoSourcePlayer1.Size = New System.Drawing.Size(260, 238)
-        Me.VideoSourcePlayer1.TabIndex = 0
-        Me.VideoSourcePlayer1.Text = "VideoSourcePlayer1"
-        Me.VideoSourcePlayer1.VideoSource = Nothing
-        '
-        'Main
-        '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(284, 262)
-        Me.Controls.Add(Me.VideoSourcePlayer1)
-        Me.Name = "Main"
-        Me.Text = "Main"
-        Me.ResumeLayout(False)
+		Me.VideoWindow = New AForge.Controls.VideoSourcePlayer()
+		Me.SuspendLayout()
+		'
+		'VideoWindow
+		'
+		Me.VideoWindow.Dock = System.Windows.Forms.DockStyle.Fill
+		Me.VideoWindow.Location = New System.Drawing.Point(0, 0)
+		Me.VideoWindow.Name = "VideoWindow"
+		Me.VideoWindow.Size = New System.Drawing.Size(284, 262)
+		Me.VideoWindow.TabIndex = 0
+		Me.VideoWindow.Text = "VideoSourcePlayer1"
+		Me.VideoWindow.VideoSource = Nothing
+		'
+		'Main
+		'
+		Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+		Me.ClientSize = New System.Drawing.Size(284, 262)
+		Me.Controls.Add(Me.VideoWindow)
+		Me.Name = "Main"
+		Me.Text = "Main"
+		Me.ResumeLayout(False)
 
-    End Sub
-    Friend WithEvents VideoSourcePlayer1 As AForge.Controls.VideoSourcePlayer
+	End Sub
+	Friend WithEvents VideoWindow As AForge.Controls.VideoSourcePlayer
 End Class
