@@ -60,21 +60,29 @@ Public Class Main
 		If detector.MotionZones.Length = 0 Then detector.MotionZones = {New Rectangle(New Point(0, 0), ScreenVid.VideoSize)}
 	End Sub
 
-	Private Sub VideoWindow_MouseDown(sender As Object, e As System.Windows.Forms.MouseEventArgs) Handles VideoWindow.MouseDown
-		Select Case e.Button
-			Case Windows.Forms.MouseButtons.Right
-				Dim o As New SizeableFrame
-				o.Size = New Size(100, 100)
-				o.Location = New Point(100, 100)
-				Me.VideoWindow.Controls.Add(o)
-				AddHandler o.LocationChanged, AddressOf FrameResize
-				AddHandler o.SizeChanged, AddressOf FrameResize
-			Case Windows.Forms.MouseButtons.Left
-				ScreenVid.Click(UIToVid(e.Location))
-			Case Windows.Forms.MouseButtons.Middle
-				detector.Reset()
-		End Select
-	End Sub
+    Private Sub VideoWindow_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles VideoWindow.MouseDown
+        Select Case e.Button
+            Case Windows.Forms.MouseButtons.Right
+                Dim o As New SizeableFrame
+                o.Size = New Size(100, 100)
+                o.Location = New Point(100, 100)
+                Me.VideoWindow.Controls.Add(o)
+                AddHandler o.LocationChanged, AddressOf FrameResize
+                AddHandler o.SizeChanged, AddressOf FrameResize
+                AddHandler o.MouseDown, AddressOf VideoWindow_MouseDown
+            Case Windows.Forms.MouseButtons.Left
+                Dim p = e.Location
+                If TypeOf sender Is SizeableFrame Then
+                    p = Point.Add(e.Location, CType(sender, SizeableFrame).Location)
+                End If
+                p = UIToVid(p)
+                Dim out = ClickTarget.GetClickTarget(ScreenVid.LastFrame, p)
+
+                ScreenVid.Click(p)
+            Case Windows.Forms.MouseButtons.Middle
+                detector.Reset()
+        End Select
+    End Sub
 
 	Private Function UIToVid(p As Point) As Point
 		Dim dx As Double = ScreenVid.VideoSize.Width / VideoWindow.Size.Width

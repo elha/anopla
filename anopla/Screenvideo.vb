@@ -30,6 +30,7 @@ Public Class ScreenVideo
                     Exit Sub
                 Else
                     VideoSize = bm.Size
+                    LastFrame = bm.Clone
                     ' The Bitmap shouldn't be null, raise the NewFrame event then free the resources.
                     RaiseEvent NewFrame(Nothing, New AForge.Video.NewFrameEventArgs(bm))
                     bm.Dispose()
@@ -60,6 +61,7 @@ Public Class ScreenVideo
 
     Public Property ScreenshotType As ScreenshotTypes = ScreenshotTypes.ActiveWindow
     Public Property VideoSize As Size
+    Public Property LastFrame As Image
 
     Public ReadOnly Property IsRunning As Boolean Implements AForge.Video.IVideoSource.IsRunning
         Get

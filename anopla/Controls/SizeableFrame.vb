@@ -1,4 +1,11 @@
 ﻿Option Strict On
+
+Imports System
+Imports System.Drawing
+Imports System.Runtime.InteropServices
+Imports System.Windows.Forms
+Imports System.ComponentModel
+
 Public Class SizeableFrame
 	Inherits System.Windows.Forms.UserControl
 	Implements IKnubbel
@@ -13,88 +20,90 @@ Public Class SizeableFrame
 	Dim pressed As IKnubbel = Nothing
 	Dim start As Size = Nothing
 
-	Private Sub Knubbel_MouseDown(sender As Object, e As System.Windows.Forms.MouseEventArgs) Handles Me.MouseDown
-		pressed = CType(sender, IKnubbel)
-		start = New Size(e.Location)
-	End Sub
+    Private Sub Knubbel_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs)
+        pressed = CType(sender, IKnubbel)
+        start = New Size(e.Location)
+    End Sub
 
-	Private Sub Knubbel_MouseMove(sender As Object, e As System.Windows.Forms.MouseEventArgs) Handles Me.MouseMove
-		If pressed Is Nothing Then Return
+    Private Sub Knubbel_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs)
+        If pressed Is Nothing Then Return
 
-		Dim diff = Point.Subtract(e.Location, start)
-		Dim nl = Me.Left + IIf(BS(pressed.Direction, l), diff.X, 0)
-		Dim nt = Me.Top + IIf(BS(pressed.Direction, t), diff.Y, 0)
-		Dim nr = Me.Right + IIf(BS(pressed.Direction, r), diff.X, 0)
-		Dim nb = Me.Bottom + IIf(BS(pressed.Direction, b), diff.Y, 0)
+        Dim diff = Point.Subtract(e.Location, start)
+        Dim nl = Me.Left + IIf(BitSet(pressed.Direction, l), diff.X, 0)
+        Dim nt = Me.Top + IIf(BitSet(pressed.Direction, t), diff.Y, 0)
+        Dim nr = Me.Right + IIf(BitSet(pressed.Direction, r), diff.X, 0)
+        Dim nb = Me.Bottom + IIf(BitSet(pressed.Direction, b), diff.Y, 0)
 
-		Me.SetBounds(nl, nt, nr - nl, nb - nt)
-	End Sub
+        Me.SetBounds(nl, nt, nr - nl, nb - nt)
+    End Sub
 
-	Private Sub Knubbel_MouseUp(sender As Object, e As System.Windows.Forms.MouseEventArgs) Handles Me.MouseUp
-		pressed = Nothing
-	End Sub
+    Private Sub Knubbel_MouseUp(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs)
+        pressed = Nothing
+    End Sub
 
-	Private Sub SizeableFrame_MouseHover(sender As Object, e As System.EventArgs) Handles Me.MouseHover
-		BackColor = Color.WhiteSmoke
-	End Sub
+    Public Sub New()
+        MyBase.new()
 
-	Private Sub SizeableFrame_MouseLeave(sender As Object, e As System.EventArgs) Handles Me.MouseLeave
-		BackColor = Color.Transparent
-	End Sub
+        Me.SuspendLayout()
 
-	Public Sub New()
-		MyBase.new()
+        Me.BackColor = System.Drawing.Color.Transparent
+        Me.ForeColor = System.Drawing.SystemColors.ButtonShadow
+        Me.Size = New System.Drawing.Size(100, 100)
+        Me.Margin = New Padding(0, 0, 0, 0)
+        Me.Padding = New Padding(0, 0, 0, 0)
+        Me.Direction = l + t + r + b
+        Me.DoubleBuffered = True
 
-		Me.SuspendLayout()
+        For Each d As Integer In {l, l + t, t, t + r, r, r + b, b, l + b, l + t + r + b}
+            Dim o As New Knubbel
+            o.Direction = d
+            o.Anchor = CType(d, AnchorStyles)
+            o.ForeColor = Me.ForeColor
+            o.Size = New Size(8, 8)
+            o.Padding = Me.Padding
 
-		Me.BackColor = System.Drawing.Color.Transparent
-		Me.ForeColor = System.Drawing.SystemColors.ButtonShadow
-		Me.Cursor = System.Windows.Forms.Cursors.SizeAll
-		Me.Size = New System.Drawing.Size(100, 100)
-		Me.BorderStyle = Windows.Forms.BorderStyle.FixedSingle
-		Me.Margin = New Padding(0, 0, 0, 0)
-		Me.Padding = New Padding(0, 0, 0, 0)
-		Me.Direction = l + t + r + b
+            Dim nX = IIf(BitSet(d, l), 0, 0.5) + IIf(BitSet(d, r), 0.5, 0)
+            Dim nY = IIf(BitSet(d, t), 0, 0.5) + IIf(BitSet(d, b), 0.5, 0)
 
-		For Each d As Integer In {l, l + t, t, t + r, r, r + b, b, l + b}
-			Dim o As New Knubbel
-			o.Direction = d
-			o.Anchor = CType(d, AnchorStyles)
+            o.Location = New Point(CInt((Me.Size.Width - o.Size.Width) * nX), CInt((Me.Size.Height - o.Size.Height) * nY))
 
-			Dim nX = IIf(BS(d, l), 0, 0.5) + IIf(BS(d, r), 0.5, 0)
-			Dim nY = IIf(BS(d, t), 0, 0.5) + IIf(BS(d, b), 0.5, 0)
+            Select Case d
+                Case l + t, r + b
+                    o.Cursor = Cursors.SizeNWSE
+                Case l, r
+                    o.Cursor = Cursors.SizeWE
+                Case l + b, r + t
+                    o.Cursor = Cursors.SizeNESW
+                Case t, b
+                    o.Cursor = Cursors.SizeNS
+                Case Else
+                    o.Cursor = Cursors.SizeAll
+                    o.Anchor = AnchorStyles.None
+            End Select
 
-			o.Location = New Point(CInt((Me.Size.Width - o.Size.Width) * nX), CInt((Me.Size.Height - o.Size.Height) * nY))
+            Me.Controls.Add(o)
 
-			Select Case d
-				Case l + t, r + b
-					o.Cursor = Cursors.SizeNWSE
-				Case l, r
-					o.Cursor = Cursors.SizeWE
-				Case l + b, r + t
-					o.Cursor = Cursors.SizeNESW
-				Case t, b
-					o.Cursor = Cursors.SizeNS
-			End Select
+            AddHandler o.MouseDown, AddressOf Knubbel_MouseDown
+            AddHandler o.MouseMove, AddressOf Knubbel_MouseMove
+            AddHandler o.MouseUp, AddressOf Knubbel_MouseUp
+        Next
 
-			Me.Controls.Add(o)
+        Me.ResumeLayout(False)
+    End Sub
 
-			AddHandler o.MouseDown, AddressOf Knubbel_MouseDown
-			AddHandler o.MouseMove, AddressOf Knubbel_MouseMove
-			AddHandler o.MouseUp, AddressOf Knubbel_MouseUp
-		Next
+    Public Property BorderColor() As Color = Color.Black
 
-		Me.ResumeLayout(False)
-	End Sub
+    Protected Overrides Sub OnPaint(ByVal e As System.Windows.Forms.PaintEventArgs)
+        Dim lpPen As Pen = New Pen(BorderColor, 1)
+        e.Graphics.DrawRectangle(lpPen, e.ClipRectangle.X, e.ClipRectangle.Y, e.ClipRectangle.Width - 1, e.ClipRectangle.Height - 1)
+        lpPen.Dispose()
+    End Sub
 
-	Private Function BS(value As Integer, bit As Integer) As Boolean
-		Return CBool(value And bit)
-	End Function
-
-	Private Function IIf(Of T)(cond As Boolean, tv As T, fv As T) As T
-		If cond Then Return tv
-		Return fv
-	End Function
+    Public WriteOnly Property CenterLocation As Point
+        Set(ByVal value As Point)
+            Me.Location = New Point(Math.Max(0, value.X - (Me.Size.Width \ 2)), Math.Max(0, value.Y - (Me.Size.Height \ 2)))
+        End Set
+    End Property
 
 	Public Interface IKnubbel
 		Property Direction As Integer
@@ -104,24 +113,6 @@ Public Class SizeableFrame
 		Inherits UserControl
 		Implements IKnubbel
 
-		Public Sub New()
-			Size = New Size(8, 8)
-			Padding = New Padding(0, 0, 0, 0)
-			BorderStyle = Windows.Forms.BorderStyle.FixedSingle
-			Me.ForeColor = Color.Beige
-		End Sub
-
 		Public Property Direction As Integer Implements IKnubbel.Direction
 	End Class
-
-	Private Sub InitializeComponent()
-		Me.SuspendLayout()
-		'
-		'SizeableFrame
-		'
-		Me.BackColor = System.Drawing.Color.Transparent
-		Me.Name = "SizeableFrame"
-		Me.ResumeLayout(False)
-
-	End Sub
 End Class
