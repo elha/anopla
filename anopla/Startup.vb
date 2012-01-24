@@ -6,12 +6,11 @@ Imports anopla.API
 
 Public Module Startup
 	Public Sub Main()
-		HookKeyboard()
-
+		
 		Dim o As New Main
 		o.ShowDialog()
 
-		UnhookKeyboard()
+
 	End Sub
 
 	Public KeyboardHandle As Integer = 0

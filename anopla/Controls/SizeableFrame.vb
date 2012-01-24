@@ -113,4 +113,15 @@ Public Class SizeableFrame
 
 		Public Property Direction As Integer Implements IKnubbel.Direction
 	End Class
+
+	Private Sub InitializeComponent()
+		Me.SuspendLayout()
+		'
+		'SizeableFrame
+		'
+		Me.BackColor = System.Drawing.Color.Transparent
+		Me.Name = "SizeableFrame"
+		Me.ResumeLayout(False)
+
+	End Sub
 End Class
