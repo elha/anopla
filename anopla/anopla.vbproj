@@ -83,6 +83,7 @@
     <Compile Include="Screenvideo.vb" />
     <Compile Include="Startup.vb" />
     <Compile Include="Imports\API.vb" />
+    <Compile Include="TargetList.vb" />
     <Compile Include="Tools.vb" />
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +179,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\ClickTarget.resx">

@@ -206,7 +206,7 @@ Public Class Screenshot
         Dim bmp As Bitmap
 
         If GetWindowRect(handle, windowRect) Then
-            bmp = New Bitmap(windowRect.Right - windowRect.Left, windowRect.Bottom - windowRect.Top)
+			bmp = New Bitmap(windowRect.Right - windowRect.Left, windowRect.Bottom - windowRect.Top, PixelFormat.Format24bppRgb)
         Else
             Return Nothing
         End If

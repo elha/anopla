@@ -1,29 +1,28 @@
 ﻿Imports System.Collections
 
 Public Class Main
-
-	'Protected Overrides ReadOnly Property CreateParams() As CreateParams
-	'	Get
-	'		CreateParams = MyBase.CreateParams
-	'		CreateParams.ExStyle = CreateParams.ExStyle And API.WS_EX_NOACTIVATE
-	'		Return CreateParams
-	'	End Get
-	'End Property
-
-	'Protected Overrides Sub WndProc(ByRef m As Message)
-	'	If (m.Msg = API.WM_MOUSEACTIVATE) Then
-	'		m.Result = API.MA_NOACTIVATE
-	'	Else
-	'		MyBase.WndProc(m)
-	'	End If
-	'End Sub
-
+	Dim Targets As TargetList
 	Dim WithEvents ScreenVid As ScreenVideo
+	Dim cstrFile = "targetlist.xml"
+
+	Private Sub Main_FormClosing(sender As Object, e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+		ScreenVid.Stop()
+		System.IO.File.WriteAllText(cstrFile, Targets.Serialize)
+	End Sub
+
 	Private Sub Main_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+		detector = New AForge.Vision.Motion.MotionDetector(motionDetector, motionProcessing)
+
 		ScreenVid = New ScreenVideo
 		ScreenVid.SetWindow("opera")
+
+		If System.IO.File.Exists(cstrFile) Then
+			Targets = TargetList.Deserialize(System.IO.File.ReadAllText(cstrFile))
+		Else
+			Targets = New TargetList
+		End If
+
 		VideoWindow.VideoSource = ScreenVid
-		detector = New AForge.Vision.Motion.MotionDetector(motionDetector, motionProcessing)
 		motionProcessing.HighlightMotionRegions = True
 		While ScreenVid.FramesReceived = 0
 			System.Threading.Thread.Sleep(100)
@@ -36,13 +35,35 @@ Public Class Main
 	Dim detector As AForge.Vision.Motion.MotionDetector
 
 	Private Sub ScreenVid_NewFrame(sender As Object, eventArgs As AForge.Video.NewFrameEventArgs) Handles ScreenVid.NewFrame
-		If detector.ProcessFrame(eventArgs.Frame) > 0.02 Then
-			If motionProcessing.ObjectsCount > 1 Then
-				For Each r In motionProcessing.ObjectRectangles
+		'If detector.ProcessFrame(eventArgs.Frame) > 0.02 Then
+		'	If motionProcessing.ObjectsCount > 1 Then
+		'		For Each r In motionProcessing.ObjectRectangles
 
+		'		Next
+		'	End If
+		'End If
+		Try
+			Dim filter = New AForge.Imaging.Filters.ResizeBilinear(eventArgs.Frame.Width \ 2, eventArgs.Frame.Height \ 2)
+			Dim img = filter.Apply(eventArgs.Frame)
+			Dim templateMatching = New AForge.Imaging.ExhaustiveTemplateMatching(0.95)
+
+			For Each zone In GetZones()
+				For Each t In Targets
+					'If templateMatching.ProcessImage(img, t.SmallTargetImage, New Rectangle(zone.X \ 2, zone.Y \ 2, zone.Width \ 2, zone.Height \ 2)).Length > 0 Then
+					Dim m = templateMatching.ProcessImage(eventArgs.Frame, t.TargetImage, zone)
+					If m.Length > 0 Then
+						ScreenVid.Click(New Point(m(0).Rectangle.X + t.ClickRect.X + (t.ClickRect.Width * Rnd(1)), m(0).Rectangle.Y + t.ClickRect.Y + (t.ClickRect.Width * Rnd(1))))
+						System.Threading.Thread.Sleep(500)
+						ScreenVid.Start()
+						Return
+					End If
+					'End If
 				Next
-			End If
-		End If
+			Next
+		Catch ex As Exception
+
+		End Try
+
 	End Sub
 
 	Private Function GetZones() As Rectangle()
@@ -76,7 +97,8 @@ Public Class Main
                     p = Point.Add(e.Location, CType(sender, SizeableFrame).Location)
                 End If
                 p = UIToVid(p)
-                Dim out = ClickTarget.GetClickTarget(ScreenVid.LastFrame, p)
+
+				Targets.Add(ClickTarget.GetClickTarget(ScreenVid.LastFrame, p))
 
                 ScreenVid.Click(p)
             Case Windows.Forms.MouseButtons.Middle

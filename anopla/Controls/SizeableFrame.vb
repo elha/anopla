@@ -9,6 +9,7 @@ Imports System.ComponentModel
 Public Class SizeableFrame
 	Inherits System.Windows.Forms.UserControl
 	Implements IKnubbel
+	Public Event DoubleClick2(sender As Object)
 
 	Public Property Direction As Integer Implements IKnubbel.Direction
 
@@ -39,7 +40,11 @@ Public Class SizeableFrame
 
     Private Sub Knubbel_MouseUp(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs)
         pressed = Nothing
-    End Sub
+	End Sub
+
+	Private Sub Knubbel_MouseDoubleClick(sender As Object, e As System.EventArgs) Handles Me.DoubleClick
+		RaiseEvent DoubleClick2(Me)
+	End Sub
 
     Public Sub New()
         MyBase.new()
@@ -85,7 +90,8 @@ Public Class SizeableFrame
 
             AddHandler o.MouseDown, AddressOf Knubbel_MouseDown
             AddHandler o.MouseMove, AddressOf Knubbel_MouseMove
-            AddHandler o.MouseUp, AddressOf Knubbel_MouseUp
+			AddHandler o.MouseUp, AddressOf Knubbel_MouseUp
+			AddHandler o.DoubleClick, AddressOf Knubbel_MouseDoubleClick
         Next
 
         Me.ResumeLayout(False)
@@ -115,4 +121,6 @@ Public Class SizeableFrame
 
 		Public Property Direction As Integer Implements IKnubbel.Direction
 	End Class
+
+
 End Class
