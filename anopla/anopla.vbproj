@@ -63,6 +63,7 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoyerMoore.vb" />
     <Compile Include="TargetItem.vb" />
     <Compile Include="Forms\ClickTarget.Designer.vb">
       <DependentUpon>ClickTarget.vb</DependentUpon>

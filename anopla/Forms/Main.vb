@@ -3,7 +3,7 @@
 Public Class Main
 	Dim Targets As TargetList
 	Dim WithEvents ScreenVid As ScreenVideo
-	Dim cstrFile = "targetlist.xml"
+	Dim cstrFile = "..\..\..\targetlist.xml"
 
 	Private Sub Main_FormClosing(sender As Object, e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
 		ScreenVid.Stop()
