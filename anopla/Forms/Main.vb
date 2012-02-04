@@ -45,17 +45,16 @@ Public Class Main
 		Try
 			Dim filter = New AForge.Imaging.Filters.ResizeBilinear(eventArgs.Frame.Width \ 2, eventArgs.Frame.Height \ 2)
 			Dim img = filter.Apply(eventArgs.Frame)
-			Dim templateMatching = New AForge.Imaging.ExhaustiveTemplateMatching(0.95)
+            Dim templateMatching = New BoyerMooreTemplateMatching
 
 			For Each zone In GetZones()
 				For Each t In Targets
 					'If templateMatching.ProcessImage(img, t.SmallTargetImage, New Rectangle(zone.X \ 2, zone.Y \ 2, zone.Width \ 2, zone.Height \ 2)).Length > 0 Then
 					Dim m = templateMatching.ProcessImage(eventArgs.Frame, t.TargetImage, zone)
 					If m.Length > 0 Then
-						ScreenVid.Click(New Point(m(0).Rectangle.X + t.ClickRect.X + (t.ClickRect.Width * Rnd(1)), m(0).Rectangle.Y + t.ClickRect.Y + (t.ClickRect.Width * Rnd(1))))
+                        ScreenVid.Click(New Point(m(0).Rectangle.X + t.ClickRect.X + (t.ClickRect.Width * (Rnd(0.6) + 0.2)), m(0).Rectangle.Y + t.ClickRect.Y + (t.ClickRect.Width * (Rnd(0.6) + 0.2))))
 						System.Threading.Thread.Sleep(500)
-						ScreenVid.Start()
-						Return
+                        Return
 					End If
 					'End If
 				Next
@@ -72,7 +71,8 @@ Public Class Main
 			If TypeOf o Is SizeableFrame Then
 				out.Add(UIToVid(New Rectangle(o.Location, o.Size)))
 			End If
-		Next
+        Next
+        If out.Count = 0 Then out.Add(New Rectangle(New Point(0, 0), ScreenVid.VideoSize))
 		Return out.ToArray
 	End Function
 
@@ -98,8 +98,10 @@ Public Class Main
                 End If
                 p = UIToVid(p)
 
-				Targets.Add(ClickTarget.GetClickTarget(ScreenVid.LastFrame, p))
-
+                Dim t = ClickTarget.GetClickTarget(ScreenVid.LastFrame, p)
+                If t Is Nothing OrElse String.IsNullOrEmpty(t.Name) Then Return
+                Targets.Add(t)
+                System.IO.File.WriteAllText(cstrFile, Targets.Serialize)
                 ScreenVid.Click(p)
             Case Windows.Forms.MouseButtons.Middle
                 detector.Reset()

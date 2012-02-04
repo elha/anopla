@@ -288,6 +288,6 @@ Public Class Screenshot
         Threading.Thread.Sleep(100)
         mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, New System.IntPtr())
 
-        Cursor.Position = oldpos
+        'Cursor.Position = oldpos
     End Sub
 End Class

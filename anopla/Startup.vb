@@ -7,13 +7,6 @@ Imports anopla.API
 Public Module Startup
 	Public Sub Main()
 
-		Dim test = "asdfasdfasdfasdf"
-		Dim p = "df"
-
-		Dim b As New BoyerMoore(System.Text.Encoding.ASCII.GetBytes(p))
-		For Each i In b.HorspoolMatch(System.Text.Encoding.ASCII.GetBytes(test))
-			MsgBox(i.ToString)
-		Next
 
 		Dim o As New Main
 		o.ShowDialog()

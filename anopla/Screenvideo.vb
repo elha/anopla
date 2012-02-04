@@ -80,6 +80,7 @@ Public Class ScreenVideo
     End Property
 
     Public Sub Start() Implements AForge.Video.IVideoSource.Start
+        If _threadCapture.IsAlive Then _threadCapture.Abort()
         _threadCapture = New System.Threading.Thread(AddressOf ScreenCapture)
         _threadCapture.Start()
     End Sub

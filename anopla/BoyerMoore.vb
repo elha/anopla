@@ -128,10 +128,6 @@ Public Class BoyerMoore
 			While unmatched >= 0 AndAlso m_pattern(unmatched) = text(unmatched + index)
 				unmatched -= 1
 			End While
-			' empty
-			If unmatched < 0 Then
-				out.Add(index)
-			End If
 
 			If unmatched < 0 Then
 				out.Add(index)
