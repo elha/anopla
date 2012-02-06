@@ -87,6 +87,7 @@
     <Compile Include="Imports\API.vb" />
     <Compile Include="TargetList.vb" />
     <Compile Include="Tools.vb" />
+    <Compile Include="Tracer.vb" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="My Project\" />

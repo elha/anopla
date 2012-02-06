@@ -36,5 +36,4 @@ Public Class TargetItem
 			SetImage(o.Clone(New Rectangle(0, 0, o.Width, o.Height), Imaging.PixelFormat.Format24bppRgb))
 		End Set
 	End Property
-
 End Class

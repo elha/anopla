@@ -1,7 +1,14 @@
 ﻿Public Class TargetList
-	Inherits System.Collections.Generic.List(Of TargetItem)
+	Inherits System.ComponentModel.BindingList(Of TargetItem)
+	Dim cstrFile As String
 
-	Friend Shared Function Deserialize(ByVal strXML As String) As TargetList
+	Public Sub New(strFile As String)
+		cstrFile = strFile
+		If System.IO.File.Exists(cstrFile) Then Me.Deserialize(System.IO.File.ReadAllText(cstrFile))
+		AddHandler Me.ListChanged, Sub() Me.Serialize()
+	End Sub
+
+	Friend Sub Deserialize(ByVal strXML As String)
 		Dim oXML As New Xml.XmlDocument
 		Try
 			oXML.LoadXml(strXML)
@@ -9,7 +16,6 @@
 
 		End Try
 
-		Dim o As New TargetList
 		For Each node In oXML.GetElementsByTagName("target")
 			Dim t As New TargetItem
 			For Each fld In t.GetType().GetProperties()
@@ -19,12 +25,11 @@
 					fld.SetValue(t, oDB(0).InnerText, Nothing)
 				End If
 			Next
-			o.Add(t)
+			Me.Add(t)
 		Next
-		Return o
-	End Function
+	End Sub
 
-	Friend Function Serialize() As String
+	Friend Sub Serialize()
 		Dim oXML As New Xml.XmlDocument
 		oXML.LoadXml("<AnoplaTargetList/>")
 
@@ -46,6 +51,8 @@
 		Dim writer = Xml.XmlTextWriter.Create(oSb, settings)
 		oXML.Save(writer)
 		writer.Close()
-		Return oSb.ToString
-	End Function
+
+		System.IO.File.WriteAllText(cstrFile, oSb.ToString)
+	End Sub
+
 End Class
