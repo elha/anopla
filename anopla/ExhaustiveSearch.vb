@@ -77,20 +77,25 @@ Public Class BoyerMooreTemplateMatching
 		Dim search() As Byte = Nothing 'reuse buffer
 
 		For y = searchZone.Top + nRow To searchZone.Bottom - nRow
-			Dim m = matcher.HorspoolMatch(GetRowFromImage(imageData, y, search))
-			If m = -1 Then Continue For
+			Dim matchpos = BoyerMoore.NOTFOUND
+			Do
+				matchpos = matcher.HorspoolMatch(GetRowFromImage(imageData, y, search), matchpos + 1)
+				If Not matchpos = BoyerMoore.NOTFOUND Then
+					'check a few additional lines
+					Dim bGood As Boolean = True
+					Dim nChecks As Integer() = {-nRow \ 2, -1, 1, nRow \ 2}
+					For Each nCheck In nChecks
+						Dim hCheck = New BoyerMoore(GetRowFromImage(templateData, nRow + nCheck))
+						If hCheck.HorspoolMatch(GetRowFromImage(imageData, y + nCheck)) <> matchpos Then
+							bGood = False : Exit For
+						End If
+					Next
 
-			'check a few additional lines
-			Dim bGood As Boolean = True
-			Dim nChecks As Integer() = {-nRow \ 2, -1, 1, nRow \ 2}
-			For Each nCheck In nChecks
-				Dim hCheck = New BoyerMoore(GetRowFromImage(templateData, nRow + nCheck))
-				If hCheck.HorspoolMatch(GetRowFromImage(imageData, y + nCheck)) <> m Then
-					bGood = False : Exit For
+					If bGood Then
+						matchings.Add(New TemplateMatch(New Rectangle(matchpos \ GetPixelSize(imageData), y - nRow, templateData.Width, templateData.Height), 1))
+					End If
 				End If
-			Next
-
-			If bGood Then matchings.Add(New TemplateMatch(New Rectangle(m \ GetPixelSize(imageData), y - nRow, templateData.Width, templateData.Height), 1))
+			Loop Until matchpos = BoyerMoore.NOTFOUND
 		Next y
 
         Return matchings.ToArray
@@ -110,6 +115,7 @@ Public Class BoyerMooreTemplateMatching
 			Case PixelFormat.Format8bppIndexed
 				Return 1
 		End Select
+		Throw New Exception("PixelSize unknown")
 	End Function
 End Class
 

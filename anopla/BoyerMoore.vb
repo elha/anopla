@@ -16,6 +16,7 @@ Public Class BoyerMoore
 	Private m_goodSuffixShift As Integer()
 	Private m_suffixes As Integer()
 	Private m_pattern As Byte()
+	Public Const NOTFOUND = -1
 
 	''' <summary>
 	''' Constructor
@@ -137,7 +138,7 @@ Public Class BoyerMoore
 			End If
 
 		End While
-		Return -1
+		Return NOTFOUND
 	End Function
 
 	''' <summary>
