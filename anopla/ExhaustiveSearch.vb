@@ -68,25 +68,48 @@ Public Class BoyerMooreTemplateMatching
     End Function
 
     Public Function ProcessImage(ByVal imageData As System.Drawing.Imaging.BitmapData, ByVal templateData As System.Drawing.Imaging.BitmapData, ByVal searchZone As System.Drawing.Rectangle) As AForge.Imaging.TemplateMatch() Implements AForge.Imaging.ITemplateMatching.ProcessImage
-        'suche nach der mittleren Zeile des templates
-        Dim matchings As New List(Of TemplateMatch)
+		Dim matchings As New List(Of TemplateMatch)
 
-        Dim PixelSize = 3
-        Dim nRow = templateData.Height \ 2
-        Dim pattern(templateData.Width * PixelSize - 1) As Byte
-        Marshal.Copy(templateData.Scan0 + (nRow * templateData.Stride), pattern, 0, pattern.Length)
-        
-        Dim h As New BoyerMoore(pattern)
+		'find middle line from template
+		Dim nRow = templateData.Height \ 2
 
-        Dim search(imageData.Width * PixelSize - 1) As Byte
-        For y = searchZone.Top + nRow To searchZone.Bottom - nRow
-            Marshal.Copy(imageData.Scan0 + (y * imageData.Stride), search, 0, search.Length)
-            For Each m In h.HorspoolMatch(search)
-                matchings.Add(New TemplateMatch(New Rectangle(m \ PixelSize, y - nRow, templateData.Width, templateData.Height), 1))
-            Next
-        Next
+		Dim matcher = New BoyerMoore(GetRowFromImage(templateData, nRow))
+		Dim search() As Byte = Nothing 'reuse buffer
+
+		For y = searchZone.Top + nRow To searchZone.Bottom - nRow
+			Dim m = matcher.HorspoolMatch(GetRowFromImage(imageData, y, search))
+			If m = -1 Then Continue For
+
+			'check a few additional lines
+			Dim bGood As Boolean = True
+			Dim nChecks As Integer() = {-nRow \ 2, -1, 1, nRow \ 2}
+			For Each nCheck In nChecks
+				Dim hCheck = New BoyerMoore(GetRowFromImage(templateData, nRow + nCheck))
+				If hCheck.HorspoolMatch(GetRowFromImage(imageData, y + nCheck)) <> m Then
+					bGood = False : Exit For
+				End If
+			Next
+
+			If bGood Then matchings.Add(New TemplateMatch(New Rectangle(m \ GetPixelSize(imageData), y - nRow, templateData.Width, templateData.Height), 1))
+		Next y
 
         Return matchings.ToArray
-    End Function
+	End Function
+
+	Private Function GetRowFromImage(img As BitmapData, nRow As Integer, Optional ByRef out As Byte() = Nothing) As Byte()
+		Dim PixelSize As Integer = GetPixelSize(img)
+		If out Is Nothing Then Array.Resize(out, img.Width * PixelSize)
+		Marshal.Copy(img.Scan0 + nRow * img.Stride, out, 0, out.Length)
+		Return out
+	End Function
+
+	Private Function GetPixelSize(img As BitmapData) As Integer
+		Select Case img.PixelFormat
+			Case PixelFormat.Format24bppRgb
+				Return 3
+			Case PixelFormat.Format8bppIndexed
+				Return 1
+		End Select
+	End Function
 End Class
 

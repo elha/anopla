@@ -114,8 +114,8 @@ Public Class BoyerMoore
 	''' </summary>
 	''' <param name="text">text to be searched</param>
 	''' <param name="startingIndex">Index at which search begins</param>
-	''' <returns>IEnumerable which returns the indexes of pattern matches</returns>
-	Public Function HorspoolMatch(text As Byte(), startingIndex As Integer) As IEnumerable(Of Integer)
+	''' <returns>returns first match</returns>
+	Public Function HorspoolMatch(text As Byte(), startingIndex As Integer) As Integer
 		Dim patternLength As Integer = m_pattern.Length
 		Dim textLength As Integer = text.Length
 		Dim out As New List(Of Integer)
@@ -130,14 +130,14 @@ Public Class BoyerMoore
 			End While
 
 			If unmatched < 0 Then
-				out.Add(index)
+				Return index
 				index += m_goodSuffixShift(0)
 			Else
 				index += Math.Max(m_goodSuffixShift(unmatched), m_badCharacterShift(text(unmatched + index)) - patternLength + 1 + unmatched)
 			End If
 
 		End While
-		Return out
+		Return -1
 	End Function
 
 	''' <summary>
@@ -145,7 +145,7 @@ Public Class BoyerMoore
 	''' </summary>
 	''' <param name="text">text to be searched</param>
 	''' <returns>IEnumerable which returns the indexes of pattern matches</returns>
-	Public Function HorspoolMatch(text As Byte()) As IEnumerable(Of Integer)
+	Public Function HorspoolMatch(text As Byte()) As Integer
 		Return HorspoolMatch(text, 0)
 	End Function
 
