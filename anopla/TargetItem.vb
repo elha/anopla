@@ -1,16 +1,9 @@
 ﻿Imports System.IO
 Public Class TargetItem
 	Public TargetImage As Image
-	Public SmallTargetImage As Image
 
 	Public ClickRect As Rectangle
 	Public Property Name As String
-
-	Public Sub SetImage(img As Image)
-		TargetImage = img
-		Dim filter = New AForge.Imaging.Filters.ResizeBilinear(img.Width \ 2, img.Height \ 2)
-		SmallTargetImage = Filter.Apply(TargetImage)
-	End Sub
 
 	Public Property ClickRectSerialize As String
 		Get
@@ -33,7 +26,7 @@ Public Class TargetItem
 			If String.IsNullOrEmpty(Value) Then Return
 			Dim array As Byte() = Convert.FromBase64String(Value)
 			Dim o As Bitmap = Image.FromStream(New MemoryStream(array))
-			SetImage(o.Clone(New Rectangle(0, 0, o.Width, o.Height), Imaging.PixelFormat.Format24bppRgb))
+            TargetImage = o.Clone(New Rectangle(0, 0, o.Width, o.Height), Imaging.PixelFormat.Format24bppRgb)
 		End Set
 	End Property
 End Class

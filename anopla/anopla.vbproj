@@ -64,6 +64,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoyerMoore.vb" />
+    <Compile Include="Controls\ClickPoint.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="ExhaustiveSearch.vb" />
     <Compile Include="TargetItem.vb" />
     <Compile Include="Forms\ClickTarget.Designer.vb">
@@ -185,6 +188,9 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\ClickPoint.resx">
+      <DependentUpon>ClickPoint.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ClickTarget.resx">
       <DependentUpon>ClickTarget.vb</DependentUpon>
     </EmbeddedResource>

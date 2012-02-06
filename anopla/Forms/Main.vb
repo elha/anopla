@@ -44,7 +44,8 @@ Public Class Main
 
 		'		Next
 		'	End If
-		'End If
+        'End If
+        If Targets Is Nothing Then Return
 		Try
 			Tracer.Trace("ScreenVid_NewFrame", "")
 
@@ -130,14 +131,15 @@ Public Class Main
 	End Function
 
 	Public Sub AddTrace(time As String, strFunction As String, msg As String) Implements Tracer.ITraceListener.AddTrace
-		If Me.TraceBox.InvokeRequired Then
-		Else
-			Dim item As New ListViewItem
-			item.Text = time
-			item.SubItems.Add(strFunction)
-			item.SubItems.Add(msg)
+        If Me.TraceBox.InvokeRequired Then
+            Me.TraceBox.Invoke(Sub() AddTrace(time, strFunction, msg))
+        Else
+            Dim item As New ListViewItem
+            item.Text = time
+            item.SubItems.Add(strFunction)
+            item.SubItems.Add(msg)
 
-			TraceBox.Items.Add(item)
-		End If
+            TraceBox.Items.Add(item)
+        End If
 	End Sub
 End Class

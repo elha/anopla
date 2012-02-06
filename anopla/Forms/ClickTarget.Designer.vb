@@ -22,46 +22,29 @@ Partial Class ClickTarget
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.sfClickframe = New anopla.SizeableFrame()
-        Me.sfTarget = New anopla.SizeableFrame()
+        Me.pic = New System.Windows.Forms.PictureBox()
+        CType(Me.pic, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
-        'sfClickframe
+        'pic
         '
-        Me.sfClickframe.BackColor = System.Drawing.Color.Transparent
-        Me.sfClickframe.BorderColor = System.Drawing.Color.Orange
-        Me.sfClickframe.Direction = 15
-        Me.sfClickframe.ForeColor = System.Drawing.SystemColors.ButtonShadow
-        Me.sfClickframe.Location = New System.Drawing.Point(379, 284)
-        Me.sfClickframe.Margin = New System.Windows.Forms.Padding(0)
-        Me.sfClickframe.Name = "sfClickframe"
-        Me.sfClickframe.Size = New System.Drawing.Size(25, 25)
-        Me.sfClickframe.TabIndex = 1
-        '
-        'sfTarget
-        '
-        Me.sfTarget.BackColor = System.Drawing.Color.Transparent
-        Me.sfTarget.BorderColor = System.Drawing.Color.Black
-        Me.sfTarget.Direction = 15
-        Me.sfTarget.ForeColor = System.Drawing.SystemColors.ButtonShadow
-        Me.sfTarget.Location = New System.Drawing.Point(227, 177)
-        Me.sfTarget.Margin = New System.Windows.Forms.Padding(0)
-        Me.sfTarget.Name = "sfTarget"
-        Me.sfTarget.Size = New System.Drawing.Size(325, 244)
-        Me.sfTarget.TabIndex = 2
+        Me.pic.Location = New System.Drawing.Point(0, 0)
+        Me.pic.Name = "pic"
+        Me.pic.Size = New System.Drawing.Size(56, 58)
+        Me.pic.TabIndex = 0
+        Me.pic.TabStop = False
         '
         'ClickTarget
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(752, 597)
-        Me.Controls.Add(Me.sfClickframe)
-        Me.Controls.Add(Me.sfTarget)
+        Me.Controls.Add(Me.pic)
         Me.Name = "ClickTarget"
         Me.Text = "ClickTarget"
+        CType(Me.pic, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
-    Friend WithEvents sfClickframe As anopla.SizeableFrame
-    Friend WithEvents sfTarget As anopla.SizeableFrame
+    Friend WithEvents pic As System.Windows.Forms.PictureBox
 End Class
