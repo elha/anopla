@@ -67,6 +67,9 @@
     <Compile Include="Controls\ClickPoint.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Controls\PicBox.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="ExhaustiveSearch.vb" />
     <Compile Include="TargetItem.vb" />
     <Compile Include="Forms\ClickTarget.Designer.vb">

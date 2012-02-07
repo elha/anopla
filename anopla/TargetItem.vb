@@ -1,32 +1,13 @@
-﻿Imports System.IO
-Public Class TargetItem
-	Public TargetImage As Image
-
-	Public ClickRect As Rectangle
+﻿Public Class TargetItem
+	Public Property TargetImage As Bitmap
+	Public Property ClickRect As Rectangle
 	Public Property Name As String
 
-	Public Property ClickRectSerialize As String
-		Get
-			Return ClickRect.X.ToString & "," & ClickRect.Y.ToString & "," & ClickRect.Width.ToString & "," & ClickRect.Height.ToString
-		End Get
-		Set(value As String)
-			If String.IsNullOrEmpty(value) Then Return
-			Dim arr = value.Split(","c)
-			ClickRect = New Rectangle(Integer.Parse(arr(0)), Integer.Parse(arr(1)), Integer.Parse(arr(2)), Integer.Parse(arr(3)))
-		End Set
-	End Property
-
-	Public Property TargetImageSerialize() As String
-		Get
-			Dim ms As New MemoryStream()
-			TargetImage.Save(ms, System.Drawing.Imaging.ImageFormat.Png)
-			Return Convert.ToBase64String(ms.ToArray)
-		End Get
-		Set(ByVal Value As String)
-			If String.IsNullOrEmpty(Value) Then Return
-			Dim array As Byte() = Convert.FromBase64String(Value)
-			Dim o As Bitmap = Image.FromStream(New MemoryStream(array))
-            TargetImage = o.Clone(New Rectangle(0, 0, o.Width, o.Height), Imaging.PixelFormat.Format24bppRgb)
-		End Set
-	End Property
+	Public Function Clone() As TargetItem
+		Dim out As New TargetItem
+		out.TargetImage = TargetImage.Clone
+		out.Name = Name
+		out.ClickRect = ClickRect
+		Return out
+	End Function
 End Class

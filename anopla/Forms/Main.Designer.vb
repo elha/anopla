@@ -22,7 +22,6 @@ Partial Class Main
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-		Me.VideoWindow = New AForge.Controls.VideoSourcePlayer()
 		Me.SplitMain = New System.Windows.Forms.SplitContainer()
 		Me.SplitBottom = New System.Windows.Forms.SplitContainer()
 		Me.TraceBox = New System.Windows.Forms.ListView()
@@ -33,6 +32,7 @@ Partial Class Main
 		Me.colName = New System.Windows.Forms.DataGridViewTextBoxColumn()
 		Me.colClickTarget = New System.Windows.Forms.DataGridViewTextBoxColumn()
 		Me.colMatchTarget = New System.Windows.Forms.DataGridViewImageColumn()
+		Me.VideoBox = New PicBox()
 		CType(Me.SplitMain, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me.SplitMain.Panel1.SuspendLayout()
 		Me.SplitMain.Panel2.SuspendLayout()
@@ -44,16 +44,6 @@ Partial Class Main
 		CType(Me.TargetGrid, System.ComponentModel.ISupportInitialize).BeginInit()
 		Me.SuspendLayout()
 		'
-		'VideoWindow
-		'
-		Me.VideoWindow.Dock = System.Windows.Forms.DockStyle.Fill
-		Me.VideoWindow.Location = New System.Drawing.Point(0, 0)
-		Me.VideoWindow.Name = "VideoWindow"
-		Me.VideoWindow.Size = New System.Drawing.Size(880, 302)
-		Me.VideoWindow.TabIndex = 0
-		Me.VideoWindow.Text = "VideoSourcePlayer1"
-		Me.VideoWindow.VideoSource = Nothing
-		'
 		'SplitMain
 		'
 		Me.SplitMain.Dock = System.Windows.Forms.DockStyle.Fill
@@ -63,7 +53,7 @@ Partial Class Main
 		'
 		'SplitMain.Panel1
 		'
-		Me.SplitMain.Panel1.Controls.Add(Me.VideoWindow)
+		Me.SplitMain.Panel1.Controls.Add(Me.VideoBox)
 		'
 		'SplitMain.Panel2
 		'
@@ -118,11 +108,14 @@ Partial Class Main
 		'TargetGrid
 		'
 		Me.TargetGrid.AllowUserToAddRows = False
+		Me.TargetGrid.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders
 		Me.TargetGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
 		Me.TargetGrid.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colName, Me.colClickTarget, Me.colMatchTarget})
 		Me.TargetGrid.Dock = System.Windows.Forms.DockStyle.Fill
 		Me.TargetGrid.Location = New System.Drawing.Point(0, 0)
+		Me.TargetGrid.MultiSelect = False
 		Me.TargetGrid.Name = "TargetGrid"
+		Me.TargetGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
 		Me.TargetGrid.Size = New System.Drawing.Size(361, 384)
 		Me.TargetGrid.TabIndex = 0
 		'
@@ -144,6 +137,15 @@ Partial Class Main
 		Me.colMatchTarget.DataPropertyName = "TargetImage"
 		Me.colMatchTarget.HeaderText = "TargetImage"
 		Me.colMatchTarget.Name = "colMatchTarget"
+		'
+		'VideoBox
+		'
+		Me.VideoBox.Dock = System.Windows.Forms.DockStyle.Fill
+		Me.VideoBox.Location = New System.Drawing.Point(0, 0)
+		Me.VideoBox.Name = "VideoBox"
+		Me.VideoBox.Size = New System.Drawing.Size(880, 302)
+		Me.VideoBox.TabIndex = 0
+		Me.VideoBox.TabStop = False
 		'
 		'Main
 		'
@@ -167,7 +169,6 @@ Partial Class Main
 
 	End Sub
 
-	Friend WithEvents VideoWindow As AForge.Controls.VideoSourcePlayer
 	Friend WithEvents SplitMain As System.Windows.Forms.SplitContainer
 	Friend WithEvents SplitBottom As System.Windows.Forms.SplitContainer
 	Friend WithEvents TraceBox As System.Windows.Forms.ListView
@@ -178,4 +179,5 @@ Partial Class Main
 	Friend WithEvents colName As System.Windows.Forms.DataGridViewTextBoxColumn
 	Friend WithEvents colClickTarget As System.Windows.Forms.DataGridViewTextBoxColumn
 	Friend WithEvents colMatchTarget As System.Windows.Forms.DataGridViewImageColumn
+	Friend WithEvents VideoBox As PicBox
 End Class
