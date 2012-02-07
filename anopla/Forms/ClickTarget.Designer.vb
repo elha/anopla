@@ -22,8 +22,7 @@ Partial Class ClickTarget
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.pic = New System.Windows.Forms.PictureBox()
-        CType(Me.pic, System.ComponentModel.ISupportInitialize).BeginInit()
+		Me.pic = New PicBox()
         Me.SuspendLayout()
         '
         'pic
@@ -32,19 +31,20 @@ Partial Class ClickTarget
         Me.pic.Name = "pic"
         Me.pic.Size = New System.Drawing.Size(56, 58)
         Me.pic.TabIndex = 0
-        Me.pic.TabStop = False
+		Me.pic.TabStop = False
+		Me.pic.Dock = DockStyle.Fill
         '
         'ClickTarget
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(752, 597)
+		Me.ClientSize = New System.Drawing.Size(752, 597)
+		Me.DoubleBuffered = True
         Me.Controls.Add(Me.pic)
         Me.Name = "ClickTarget"
         Me.Text = "ClickTarget"
-        CType(Me.pic, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
-    Friend WithEvents pic As System.Windows.Forms.PictureBox
+	Friend WithEvents pic As PicBox
 End Class

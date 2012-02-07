@@ -51,9 +51,8 @@ Public Class SizeableFrame
 
         Me.SuspendLayout()
 
-        Me.BackColor = System.Drawing.Color.Transparent
-        Me.ForeColor = System.Drawing.SystemColors.ButtonShadow
-        Me.Size = New System.Drawing.Size(100, 100)
+		Me.BackColor = Color.FromArgb(50, Color.Beige)
+		Me.Size = New System.Drawing.Size(100, 100)
         Me.Margin = New Padding(0, 0, 0, 0)
         Me.Padding = New Padding(0, 0, 0, 0)
         Me.Direction = l + t + r + b
@@ -99,17 +98,15 @@ Public Class SizeableFrame
 
     Public Property BorderColor() As Color = Color.Black
 
-    Protected Overrides Sub OnPaint(ByVal e As System.Windows.Forms.PaintEventArgs)
-        Dim lpPen As Pen = New Pen(BorderColor, 1)
-        e.Graphics.DrawRectangle(lpPen, e.ClipRectangle.X, e.ClipRectangle.Y, e.ClipRectangle.Width - 1, e.ClipRectangle.Height - 1)
-        lpPen.Dispose()
-    End Sub
-
-    Public WriteOnly Property CenterLocation As Point
-        Set(ByVal value As Point)
-            Me.Location = New Point(Math.Max(0, value.X - (Me.Size.Width \ 2)), Math.Max(0, value.Y - (Me.Size.Height \ 2)))
-        End Set
-    End Property
+	Public Property Rect As Rectangle
+		Get
+			Return New Rectangle(Me.Location, Me.Size)
+		End Get
+		Set(value As Rectangle)
+			Me.Location = value.Location
+			Me.Size = value.Size
+		End Set
+	End Property
 
 	Public Interface IKnubbel
 		Property Direction As Integer
@@ -121,6 +118,5 @@ Public Class SizeableFrame
 
 		Public Property Direction As Integer Implements IKnubbel.Direction
 	End Class
-
 
 End Class

@@ -6,14 +6,9 @@ Public Class Main
 	Dim Targets As TargetList
 	Dim WithEvents ScreenVid As ScreenVideo
 
-	Private Sub Main_FormClosing(sender As Object, e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
-		ScreenVid.Stop()
-	End Sub
-
 	Private Sub Main_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 		Tracer.Tracer = Me
 		Tracer.Trace("Main_Load", "Starting ...")
-		detector = New AForge.Vision.Motion.MotionDetector(motionDetector, motionProcessing)
 
 		ScreenVid = New ScreenVideo
 		ScreenVid.SetWindow("opera")
@@ -23,43 +18,25 @@ Public Class Main
 		Me.TargetGrid.AutoGenerateColumns = False
 		Me.TargetGrid.DataSource = Targets
 
-		VideoWindow.VideoSource = ScreenVid
-		motionProcessing.HighlightMotionRegions = True
-		While ScreenVid.FramesReceived = 0
-			System.Threading.Thread.Sleep(100)
-		End While
-		Me.VideoWindow.Size = New Size(ScreenVid.VideoSize.Width \ 2, ScreenVid.VideoSize.Height \ 2)
+		VideoBox.Image = ScreenVid.GetFrame
 
 		Tracer.Trace("Main_Load", "Init complete")
 	End Sub
 
-	Dim motionDetector = New AForge.Vision.Motion.SimpleBackgroundModelingDetector
-	Dim motionProcessing As New AForge.Vision.Motion.BlobCountingObjectsProcessing
-	Dim detector As AForge.Vision.Motion.MotionDetector
-
-	Private Sub ScreenVid_NewFrame(sender As Object, eventArgs As AForge.Video.NewFrameEventArgs) Handles ScreenVid.NewFrame
-		'If detector.ProcessFrame(eventArgs.Frame) > 0.02 Then
-		'	If motionProcessing.ObjectsCount > 1 Then
-		'		For Each r In motionProcessing.ObjectRectangles
-
-		'		Next
-		'	End If
-        'End If
-        If Targets Is Nothing Then Return
+	Private Sub ScreenVid_NewFrame(bm As Bitmap) Handles ScreenVid.NewFrame
+		If Targets Is Nothing Then Return
 		Try
 			Tracer.Trace("ScreenVid_NewFrame", "")
 
-			Dim filter = New AForge.Imaging.Filters.ResizeBilinear(eventArgs.Frame.Width \ 2, eventArgs.Frame.Height \ 2)
-			Dim img = filter.Apply(eventArgs.Frame)
 			Dim templateMatching = New BoyerMooreTemplateMatching
 
 			For Each zone In GetZones()
 				For Each t In Targets
-					Dim m = templateMatching.ProcessImage(eventArgs.Frame, t.TargetImage, zone)
+					Dim m = templateMatching.ProcessImage(bm, t.TargetImage, zone)
 					If m.Length > 0 Then
 						Tracer.Trace("ScreenVid_NewFrame", "Match on " & t.Name)
 
-						ScreenVid.Click(New Point(m(0).Rectangle.X + t.ClickRect.X + (t.ClickRect.Width * (Rnd(0.6) + 0.2)), m(0).Rectangle.Y + t.ClickRect.Y + (t.ClickRect.Width * (Rnd(0.6) + 0.2))))
+						ScreenVid.Click(New Point(m(0).X + t.ClickRect.X + (t.ClickRect.Width * (Rnd(0.6) + 0.2)), m(0).Y + t.ClickRect.Y + (t.ClickRect.Width * (Rnd(0.6) + 0.2))))
 						System.Threading.Thread.Sleep(500)
 						Return
 					End If
@@ -68,12 +45,11 @@ Public Class Main
 		Catch ex As Exception
 
 		End Try
-
 	End Sub
 
 	Private Function GetZones() As Rectangle()
 		Dim out As New Generic.List(Of Rectangle)
-		For Each o As Control In VideoWindow.Controls
+		For Each o As Control In VideoBox.Controls
 			If TypeOf o Is SizeableFrame Then
 				out.Add(UIToVid(New Rectangle(o.Location, o.Size)))
 			End If
@@ -82,20 +58,13 @@ Public Class Main
 		Return out.ToArray
 	End Function
 
-	Private Sub FrameResize(sender As Object, e As Object)
-		detector.MotionZones = GetZones()
-		If detector.MotionZones.Length = 0 Then detector.MotionZones = {New Rectangle(New Point(0, 0), ScreenVid.VideoSize)}
-	End Sub
-
-	Private Sub VideoWindow_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles VideoWindow.MouseDown
+	Private Sub VideoWindow_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles VideoBox.MouseDown
 		Select Case e.Button
 			Case Windows.Forms.MouseButtons.Right
 				Dim o As New SizeableFrame
 				o.Size = New Size(100, 100)
 				o.Location = New Point(100, 100)
-				Me.VideoWindow.Controls.Add(o)
-				AddHandler o.LocationChanged, AddressOf FrameResize
-				AddHandler o.SizeChanged, AddressOf FrameResize
+				Me.VideoBox.Controls.Add(o)
 				AddHandler o.MouseDown, AddressOf VideoWindow_MouseDown
 			Case Windows.Forms.MouseButtons.Left
 				Dim p = e.Location
@@ -106,27 +75,25 @@ Public Class Main
 
 				Tracer.Trace("VideoWindow_MouseDown", "Leftclick " & p.X.ToString & ", " & p.Y.ToString)
 
-				Dim t = ClickTarget.GetClickTarget(ScreenVid.LastFrame, p)
+				Dim t = ClickTarget.GetClickTarget(VideoBox.Image, p)
 				If t Is Nothing OrElse String.IsNullOrEmpty(t.Name) Then Return
 				Targets.Add(t)
 
 				Tracer.Trace("VideoWindow_MouseDown", "SaveTarget " & t.ClickRect.X.ToString & ", " & t.ClickRect.Y.ToString & ", " & t.ClickRect.Width & ", " & t.ClickRect.Height)
 
 				ScreenVid.Click(p)
-			Case Windows.Forms.MouseButtons.Middle
-				detector.Reset()
 		End Select
 	End Sub
 
 	Private Function UIToVid(p As Point) As Point
-		Dim dx As Double = ScreenVid.VideoSize.Width / VideoWindow.Size.Width
-		Dim dy As Double = ScreenVid.VideoSize.Height / VideoWindow.Size.Height
+		Dim dx As Double = ScreenVid.VideoSize.Width / VideoBox.Size.Width
+		Dim dy As Double = ScreenVid.VideoSize.Height / VideoBox.Size.Height
 		Return New Point(CInt(p.X * dx), CInt(p.Y * dy))
 	End Function
 
 	Private Function UIToVid(p As Rectangle) As Rectangle
-		Dim dx As Double = ScreenVid.VideoSize.Width / VideoWindow.Size.Width
-		Dim dy As Double = ScreenVid.VideoSize.Height / VideoWindow.Size.Height
+		Dim dx As Double = ScreenVid.VideoSize.Width / VideoBox.Size.Width
+		Dim dy As Double = ScreenVid.VideoSize.Height / VideoBox.Size.Height
 		Return New Rectangle(CInt(p.X * dx), CInt(p.Y * dy), CInt(p.Width * dx), CInt(p.Height * dy))
 	End Function
 
@@ -141,5 +108,15 @@ Public Class Main
 
             TraceBox.Items.Add(item)
         End If
+	End Sub
+
+	Private Sub TargetGrid_CellDoubleClick(sender As System.Object, e As System.Windows.Forms.DataGridViewCellEventArgs) Handles TargetGrid.CellDoubleClick
+		If e.RowIndex < 0 OrElse TargetGrid.Rows.Count - 1 < e.RowIndex OrElse TargetGrid.Rows(e.RowIndex) Is Nothing Then Return
+		Dim target = CType(TargetGrid.Rows(e.RowIndex).DataBoundItem, TargetItem)
+		Dim patch = ClickTarget.GetClickTarget(target)
+
+		If patch Is Nothing OrElse String.IsNullOrEmpty(patch.Name) Then Return
+		Targets.Insert(Targets.IndexOf(target), patch)
+		Targets.Remove(target)
 	End Sub
 End Class

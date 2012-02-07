@@ -1,4 +1,6 @@
-﻿Public Class TargetList
+﻿Imports System.IO
+
+Public Class TargetList
 	Inherits System.ComponentModel.BindingList(Of TargetItem)
 	Dim cstrFile As String
 
@@ -22,7 +24,9 @@
 				If fld.CanWrite Then
 					Dim oDB = node.GetElementsByTagName(fld.Name)
 					If oDB.Count = 0 Then Continue For
-					fld.SetValue(t, oDB(0).InnerText, Nothing)
+
+
+					fld.SetValue(t, DeSerializeValue(oDB(0).InnerText, fld.PropertyType), Nothing)
 				End If
 			Next
 			Me.Add(t)
@@ -37,7 +41,7 @@
 			Dim oNode = oXML.CreateElement("target")
 			For Each fld In target.GetType().GetProperties()
 				Dim oDB = oXML.CreateElement(fld.Name)
-				oDB.InnerText = fld.GetValue(target, Nothing)
+				oDB.InnerText = SerializeValue(fld.GetValue(target, Nothing))
 				oNode.AppendChild(oDB)
 			Next
 			oXML.DocumentElement.AppendChild(oNode)
@@ -55,4 +59,33 @@
 		System.IO.File.WriteAllText(cstrFile, oSb.ToString)
 	End Sub
 
+	Private Shared Function SerializeValue(o As Object) As String
+		If o Is Nothing Then Return String.Empty
+		If TypeOf o Is Rectangle Then
+			Dim clickrect = CType(o, Rectangle)
+			Return clickrect.X.ToString & "," & clickrect.Y.ToString & "," & clickrect.Width.ToString & "," & clickrect.Height.ToString
+		End If
+		If TypeOf o Is Bitmap Then
+			Dim ms As New MemoryStream()
+			CType(o, Bitmap).Save(ms, System.Drawing.Imaging.ImageFormat.Png)
+			Return Convert.ToBase64String(ms.ToArray)
+		End If
+
+		Return o.ToString
+	End Function
+
+	Private Shared Function DeSerializeValue(s As String, ByVal t As Type) As Object
+		If t Is GetType(Rectangle) Then
+			If String.IsNullOrEmpty(s) Then Return Nothing
+			Dim arr = s.Split(","c)
+			Return New Rectangle(Integer.Parse(arr(0)), Integer.Parse(arr(1)), Integer.Parse(arr(2)), Integer.Parse(arr(3)))
+		End If
+		If t Is GetType(Bitmap) Then
+			If String.IsNullOrEmpty(s) Then Return Nothing
+			Dim array As Byte() = Convert.FromBase64String(s)
+			Dim img As Bitmap = Image.FromStream(New MemoryStream(array))
+			Return img.Clone(New Rectangle(0, 0, img.Width, img.Height), Imaging.PixelFormat.Format24bppRgb)
+		End If
+		Return s
+	End Function
 End Class
