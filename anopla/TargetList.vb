@@ -10,6 +10,12 @@ Public Class TargetList
 		AddHandler Me.ListChanged, Sub() Me.Serialize()
 	End Sub
 
+    Public Function List() As Collections.Generic.List(Of TargetItem)
+        Dim out As New Collections.Generic.List(Of TargetItem)
+        out.AddRange(Me)
+        Return out
+    End Function
+
 	Friend Sub Deserialize(ByVal strXML As String)
 		Dim oXML As New Xml.XmlDocument
 		Try

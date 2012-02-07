@@ -64,13 +64,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoyerMoore.vb" />
-    <Compile Include="Controls\ClickPoint.vb">
+    <Compile Include="Controls\SizeableFrame.vb">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\PicBox.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Engine.vb" />
     <Compile Include="ExhaustiveSearch.vb" />
+    <Compile Include="Imports\Helpers.vb" />
     <Compile Include="TargetItem.vb" />
     <Compile Include="Forms\ClickTarget.Designer.vb">
       <DependentUpon>ClickTarget.vb</DependentUpon>
@@ -78,16 +80,12 @@
     <Compile Include="Forms\ClickTarget.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\SizeableFrame.vb">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Forms\Main.Designer.vb">
       <DependentUpon>Main.vb</DependentUpon>
     </Compile>
     <Compile Include="Forms\Main.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Screenshot.vb" />
     <Compile Include="Screenvideo.vb" />
     <Compile Include="Startup.vb" />
     <Compile Include="Imports\API.vb" />
@@ -191,14 +189,8 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Controls\ClickPoint.resx">
-      <DependentUpon>ClickPoint.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ClickTarget.resx">
       <DependentUpon>ClickTarget.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\SizeableFrame.resx">
-      <DependentUpon>SizeableFrame.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Main.resx">
       <DependentUpon>Main.vb</DependentUpon>

@@ -117,8 +117,9 @@ Partial Class Main
 		Me.TargetGrid.Name = "TargetGrid"
 		Me.TargetGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
 		Me.TargetGrid.Size = New System.Drawing.Size(361, 384)
-		Me.TargetGrid.TabIndex = 0
-		'
+        Me.TargetGrid.TabIndex = 0
+        Me.TargetGrid.AutoGenerateColumns = False
+        '
 		'colName
 		'
 		Me.colName.DataPropertyName = "Name"

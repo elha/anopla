@@ -1,41 +1,30 @@
 ﻿Public Class PicBox
 	Inherits UserControl
+    Private mImage As Bitmap
+    Public Property Image As Bitmap
+        Get
+            Return mImage
+        End Get
+        Set(ByVal value As Bitmap)
+            mImage = value
+            Me.Refresh()
+        End Set
+    End Property
 
-	Public Property Image As Bitmap
-		Get
-			Return BackgroundImage
-		End Get
-		Set(value As Bitmap)
-			BackgroundImage = value
-			Me.PicBox_Resize(Me, Nothing)
-		End Set
-	End Property
-
-	Private oldSize As Size
-
-	Private Sub PicBox_Resize(sender As Object, e As System.EventArgs) Handles Me.Resize
-		If Image Is Nothing OrElse Me.Width = 0 OrElse Me.Height = 0 Then Return
-
-		Dim dx = Image.Width / Me.Width
-		Dim dy = Image.Height / Me.Height
-
-		If dx < dy Then
-			Dim nWidth = Image.Width / dy
-			If Me.Width <> nWidth Then Me.Width = nWidth
-		Else
-			Dim nHeight = Image.Height / dy
-			If Me.Height <> nHeight Then Me.Height = nHeight
-		End If
-
-		If oldSize <> Size Then
-			dx = Size.Width / oldSize.Width
-			For Each o As Control In Controls
-				o.SetBounds(o.Left * dx, o.Top * dx, o.Width * dx, o.Height * dx)
-			Next
-		End If
-
-		oldSize = Size
-	End Sub
+    Dim ctrl As New Collections.Generic.Dictionary(Of SizeableFrame, Rectangle)
+    Private Sub PicBox_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Resize
+        For Each o As Control In Controls
+            If Not TypeOf o Is SizeableFrame Then Continue For
+            Dim s = CType(o, SizeableFrame)
+            If Not ctrl.ContainsKey(s) Then
+                AddHandler s.Resize, Sub() ctrl(s) = Multiply(s.Rect, 1 / Zoomlevel)
+                AddHandler s.LocationChanged, Sub() ctrl(s) = Multiply(s.Rect, 1 / Zoomlevel)
+                ctrl.Add(s, Multiply(s.Rect, 1 / Zoomlevel)) 'normated size
+            End If
+            s.Rect = Multiply(ctrl(s), Zoomlevel)
+        Next
+        Me.Refresh()
+    End Sub
 
 	Public ReadOnly Property Zoomlevel As Double
 		Get
@@ -43,19 +32,19 @@
 
 			Dim dx = Me.Width / Image.Width
 			Dim dy = Me.Height / Image.Height
-			Return Math.Max(dx, dy)
+            Return Math.Min(dx, dy)
 		End Get
 	End Property
 
 	Public Sub New()
-		BackgroundImageLayout = ImageLayout.Zoom
-		'SetStyle(ControlStyles.UserPaint, True)
-		'SetStyle(ControlStyles.AllPaintingInWmPaint, True)
-		'SetStyle(ControlStyles.DoubleBuffer, True)
+        SetStyle(ControlStyles.UserPaint, True)
+        SetStyle(ControlStyles.AllPaintingInWmPaint, True)
+        SetStyle(ControlStyles.DoubleBuffer, True)
 	End Sub
 
-	'Protected Overrides Sub OnPaint(e As PaintEventArgs)
-	'	'e.Graphics.DrawImage(BackgroundImage, 0, 0, Me.Width, Me.Height)
-	'	'MyBase.OnPaint(e)
-	'End Sub
+    Protected Overrides Sub OnPaint(ByVal e As PaintEventArgs)
+        Dim g = e.Graphics
+        MyBase.OnPaintBackground(e)
+        If Image IsNot Nothing Then g.DrawImage(Image, 0, 0, CInt(Image.Width * Zoomlevel), CInt(Image.Height * Zoomlevel))
+    End Sub
 End Class
