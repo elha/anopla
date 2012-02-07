@@ -64,5 +64,55 @@ Public Class API
 	End Structure
 
 	Public Const WS_EX_NOACTIVATE As Int32 = &H8000000
-	Public Const MA_NOACTIVATE As Int32 = &H3
+    Public Const MA_NOACTIVATE As Int32 = &H3
+
+
+    <DllImport("gdi32")> _
+    Public Shared Function BitBlt(ByVal hDestDC As IntPtr, ByVal X As Integer, ByVal Y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hSrcDC As IntPtr, ByVal SrcX As Integer, ByVal SrcY As Integer, ByVal Rop As Integer) As Boolean
+    End Function
+
+    <DllImport("user32.dll")> _
+    Public Shared Function GetWindowDC(ByVal hwnd As IntPtr) As Integer
+    End Function
+
+    <DllImport("user32.dll")> _
+    Public Shared Function GetForegroundWindow() As IntPtr
+    End Function
+
+    <DllImport("user32.dll")> _
+    Public Shared Function ReleaseDC(ByVal hWnd As IntPtr, ByVal hDc As IntPtr) As IntPtr
+    End Function
+
+    <DllImport("user32")> _
+    Public Shared Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Integer
+    End Function
+
+    <DllImport("user32")> _
+    Public Shared Function GetDesktopWindow() As Long
+    End Function
+
+    Public Const SRCCOPY As Integer = &HCC0020
+
+    ''' <summary>
+    ''' Rectable structure to pass to the Windows API's
+    ''' </summary>
+    ''' <remarks></remarks>
+    <StructLayout(LayoutKind.Sequential)> _
+    Public Structure RECT
+        Dim Left As Integer
+        Dim Top As Integer
+        Dim Right As Integer
+        Dim Bottom As Integer
+    End Structure
+
+    <DllImport("user32.dll")> _
+    Public Shared Sub mouse_event(ByVal dwFlags As UInt32, ByVal dx As UInt32, ByVal dy As UInt32, ByVal dwData As UInt32, ByVal dwExtraInfo As IntPtr)
+    End Sub
+
+    Public Const MOUSEEVENTF_LEFTDOWN = &H2
+    Public Const MOUSEEVENTF_LEFTUP = &H4
+    Public Const MOUSEEVENTF_MIDDLEDOWN = &H20
+    Public Const MOUSEEVENTF_MIDDLEUP = &H40
+    Public Const MOUSEEVENTF_RIGHTDOWN = &H8
+    Public Const MOUSEEVENTF_RIGHTUP = &H10
 End Class
