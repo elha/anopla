@@ -27,7 +27,7 @@ Partial Class ClickTarget
         Me.lblName = New System.Windows.Forms.Label()
         Me.cmdCancel = New System.Windows.Forms.Button()
         Me.cmdOK = New System.Windows.Forms.Button()
-        Me.pic = New anopla.PicBox()
+		Me.pic = New PicBox()
         Me.Panel1.SuspendLayout()
         Me.SuspendLayout()
         '

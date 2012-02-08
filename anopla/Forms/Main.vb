@@ -3,25 +3,11 @@
 Public Class Main
 	Implements ITraceListener
 
-    Private Engine As Engine
-
     Private Sub Main_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        Tracer.Tracer = Me
-        Tracer.Trace("Main_Load", "Starting ...")
-
-        Engine = New Engine
-        Engine.ScreenVid = New ScreenVideo("firefox")
-        Tracer.Trace("Main_Load", "Video started")
-
-        Engine.Targets = New TargetList("..\..\..\targetlist.xml")
-        Me.TargetGrid.DataSource = Engine.Targets
+		Me.TargetGrid.DataSource = Engine.Targets
 
         AddHandler Engine.ScreenVid.NewFrame, AddressOf ShowFrames
-
-        Tracer.Trace("Main_Load", "Init complete")
-
-        Engine.Start()
-    End Sub
+	End Sub
 
     Private Sub Main_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
         Engine.stop()
