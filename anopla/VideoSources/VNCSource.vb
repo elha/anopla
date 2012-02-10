@@ -37,11 +37,13 @@ Public Class VNCSource
 		vnc.StartUpdates()
 	End Sub
 
-	Public Overrides Function CaptureFrame() As System.Drawing.Bitmap
-		CurrentFrame = mDesktop.Clone
-		RaiseNewFrame(CurrentFrame)
-		Return CurrentFrame
-	End Function
+    Public Overrides Function CaptureFrame() As System.Drawing.Bitmap
+        SyncLock mDesktop
+            CurrentFrame = mDesktop.Clone(New Rectangle(0, 0, mDesktop.Width, mDesktop.Height), PixelFormat.Format24bppRgb)
+            RaiseNewFrame(CurrentFrame)
+            Return CurrentFrame
+        End SyncLock
+    End Function
 
 	Public Overrides ReadOnly Property VideoSize As System.Drawing.Size
 		Get
@@ -74,16 +76,18 @@ Public Class VNCSource
 	' EncodedRectangle object is passed via the VncEventArgs (actually an IDesktopUpdater
 	' object so that *only* Draw() can be called here--Decode() is done elsewhere).
 	' The VncClient object handles thread marshalling onto the UI thread.
-	Protected Sub Vnc_Update(sender As Object, e As VncEventArgs) Handles vnc.VncUpdate
-		e.DesktopUpdater.Draw(mDesktop)
+    Protected Sub Vnc_Update(ByVal sender As Object, ByVal e As VncEventArgs) Handles vnc.VncUpdate
+        SyncLock mDesktop
+            e.DesktopUpdater.Draw(mDesktop)
 
-		If state = RuntimeState.Connected Then
-			vnc.RequestScreenUpdate(fullScreenRefresh)
+            If state = RuntimeState.Connected Then
+                vnc.RequestScreenUpdate(fullScreenRefresh)
 
-			' Make sure the next screen update is incremental
-			fullScreenRefresh = False
-		End If
-	End Sub
+                ' Make sure the next screen update is incremental
+                fullScreenRefresh = False
+            End If
+        End SyncLock
+    End Sub
 
 
 End Class
